@@ -1,0 +1,25 @@
+body {
+    padding: 0;
+    margin: 0;
+    padding-top: 30px;
+}
+.clear,
+.floatclear {
+    clear: both;
+}
+.badge.warning {
+    background-color: #F0AD4E;
+}
+.badge.success {
+    background-color: #5CB85C;
+}
+table td {
+    font-size: 12px;
+}
+table th {
+    color: #3185C3;
+}
+.intestazioneFiltri {
+    color: #3185C3;
+    margin-bottom: 5px;
+}

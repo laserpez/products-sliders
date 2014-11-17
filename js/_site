@@ -1,0 +1,334 @@
+function Ridimensiona() {
+    var height = $(window).height() + 'px';
+    var width = $(window).width() + 'px';
+    var itemHeight = $(window).height() * 22 / 100 + 'px';
+    var imgHeight = $(window).height() * 20 / 100 + 'px';
+
+    $('html').css({
+        height: height,
+        width: width
+    });
+    $('.container').css({
+        height: height,
+        width: width
+    });
+    $('body').css({
+        height: height,
+        width: width
+    });
+    $('#leftcurtain').css({
+        height: height,
+
+    });
+    $('#rightcurtain').css({
+        height: height,
+
+    });
+    $('.shelf').css({
+        width: width
+
+    });
+    $('.scene').css({
+        height: itemHeight
+
+    });
+    $('.scene img').css({
+        height: imgHeight
+
+    });
+
+
+}
+
+function vaiSlider(name) {
+    $(name).slick({
+        dots: false,
+        infinite: false,
+        speed: 300,
+        slidesToShow: 5,
+        slidesToScroll: 5,
+        lazyLoad: 'ondemand',
+        arrows: false,
+        adaptiveHeight: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    infinite: true
+
+                }
+    },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2
+                }
+    },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+    }
+  ]
+
+
+    });
+
+}
+
+times = 0
+
+$(document).ready(function () {
+    Ridimensiona();
+    $(window).load(function () {
+        Ridimensiona();
+    });
+    $(window).resize(function () {
+        Ridimensiona();
+    });
+
+    $(function () {
+        $('#rope').click(function () {
+            $('#leftcurtain').animate({
+                left: '-50%'
+            }, 1000);
+            $('#rightcurtain').animate({
+                right: '-51%'
+            }, 1000).delay(1000);
+            $('#rope').hide();
+
+        });
+    });
+
+    $.ajax({
+        url: "./data/uno.php",
+        type: "GET",
+        data: {
+            id: $(this).value
+        },
+        contentType: "application/json; charset=utf-8",
+        dataType: "JSON",
+        beforeSend: function (jqXHR, settings) {
+            //attivo loader sul body
+            //Scelta 1 : ho il loader nel dom da in display none:
+            $('.loader-image').show();
+            //Scelta 2 appendo il loader creandolo da zero
+            //$('body').append($('img', {
+            //class: 'loader-image',
+            // src: '/loading.gif'
+
+        },
+        success: function (data) {
+            //il json che ritorna "/il_mio_json.php"
+
+            history.pushState(data, null)
+            //location.hash = "data-1";
+
+            for (var i = 0; i < data.length; i++) {
+
+                var $img = $('<img></img>');
+                var $scene = $('<div class=\'scene\'></div>');
+                var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
+                var $variuos = $('<a class=\'various\'></a>');
+                var $div = $('<div></div>');
+
+                $img.attr('src', data[i].image);
+                $scene.append($img);
+                $scene.append($name);
+                $variuos.append($scene);
+                $div.append($variuos);
+
+                $div.data('url_item', data[i].url);
+
+                $('#carousel-one').append($div);
+                AniJS.run();
+                
+                $div.click(function (event) {
+
+
+                    var urlItem = $(this).data('url_item');
+                    
+
+                    $('#carousel-one').remove();
+                    $('.sliderContainer').append('<div id=\'carousel-one\' class=\'responsive\'></div>');
+
+                    $.ajax({
+                        url: urlItem,
+                        type: "GET",
+                        data: {
+                            id: $(this).value
+                        },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "JSON",
+                        beforeSend: function (jqXHR, settings) {
+                            //attivo loader sul body
+                            //Scelta 1 : ho il loader nel dom da in display none:
+                            // $('.loader-image').show();
+                            //Scelta 2 appendo il loader creandolo da zero
+                            $('body').append($('img', {
+                                class: 'loader-image',
+                                src: '/loading.gif'
+                            }));
+                        },
+                        success: function (items) {
+                            //il json che ritorna "/il_mio_json.php"
+                            history.pushState(items, null)
+                            for (var i = 0; i < items.length; i++) {
+
+                                var $img = $('<img></img>');
+                                var $scene = $('<div class=\'scene\'></div>');
+                                var $name = $('<div class=\'name\'>' + items[i].name + '</div>');
+                                var $variuos = $('<a class=\'various\'></a>');
+                                var $div = $('<div></div>');
+
+                                $img.attr('src', items[i].image);
+                                $scene.append($img);
+                                $scene.append($name);
+                                $variuos.append($scene);
+                                $div.append($variuos);
+                                $('.various').addClass('variousProduct');
+                                $('.various').attr('href', '#fancy');
+
+                                $('#carousel-one').append($div);
+                                Ridimensiona();
+                            }
+                            vaiSlider('#carousel-one');
+                        },
+
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                        },
+                        complete: function (data) {
+                            //disattivo loader sul body
+                            //Scelta 1/2 : ho il loader nel dom da in qualche modo:
+                            $('.loader-image').hide();
+                        }
+                    });
+                });
+            }
+            Ridimensiona();
+
+            vaiSlider('#carousel-one');
+        },
+
+        // error: function (jqXHR, textStatus, errorThrown) {
+        // console.log(jqXHR);
+        // console.log(textStatus);
+        // console.log(errorThrown);
+        // },
+        complete: function (data) {
+            //disattivo loader sul body
+            //Scelta 1/2 : ho il loader nel dom da in qualche modo:
+            $('.loader-image').hide();
+        }
+    });
+
+
+    vaiSlider('#carousel-due');
+    vaiSlider('#carousel-tre');
+});
+
+window.onpopstate = function (event) {
+    console.log(event.state)
+
+    if (event.state == null) return;
+
+    data = event.state
+
+    $('#carousel-one').remove();
+    $('.sliderContainer').append('<div id=\'carousel-one\' class=\'responsive\'></div>');
+
+    for (var i = 0; i < data.length; i++) {
+
+        var $img = $('<img></img>');
+        var $scene = $('<div class=\'scene\'></div>');
+        var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
+        var $variuos = $('<a class=\'various\'></a>');
+        var $div = $('<div></div>');
+
+        $img.attr('src', data[i].image);
+        $scene.append($img);
+        $scene.append($name);
+        $variuos.append($scene);
+        $div.append($variuos);
+
+        $div.data('url_item', data[i].url);
+
+        $('#carousel-one').append($div);
+        AniJS.run();
+        $div.click(function (event) {
+
+
+            var urlItem = $(this).data('url_item');
+
+
+            $('#carousel-one').remove();
+            $('.sliderContainer').append('<div id=\'carousel-one\' class=\'responsive\'></div>');
+
+            $.ajax({
+                url: urlItem,
+                type: "GET",
+                data: {
+                    id: $(this).value
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "JSON",
+                beforeSend: function (jqXHR, settings) {
+                    //attivo loader sul body
+                    //Scelta 1 : ho il loader nel dom da in display none:
+                    // $('.loader-image').show();
+                    //Scelta 2 appendo il loader creandolo da zero
+                    $('body').append($('img', {
+                        class: 'loader-image',
+                        src: '/loading.gif'
+                    }));
+                },
+                success: function (items) {
+                    //il json che ritorna "/il_mio_json.php"
+
+                    for (var i = 0; i < items.length; i++) {
+
+                        var $img = $('<img></img>');
+                        var $scene = $('<div class=\'scene\'></div>');
+                        var $name = $('<div class=\'name\'>' + items[i].name + '</div>');
+                        var $variuos = $('<a class=\'various\'></a>');
+                        var $div = $('<div></div>');
+
+                        $img.attr('src', items[i].image);
+                        $scene.append($img);
+                        $scene.append($name);
+                        $variuos.append($scene);
+                        $div.append($variuos);
+                        $('.various').addClass('variousProduct');
+                        $('.various').attr('href', '#fancy');
+
+                        $('#carousel-one').append($div);
+                        Ridimensiona();
+                    }
+                    vaiSlider01('#carousel-one');
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                },
+                complete: function (data) {
+                    //disattivo loader sul body
+                    //Scelta 1/2 : ho il loader nel dom da in qualche modo:
+                    $('.loader-image').hide();
+                }
+            });
+        });
+    }
+    Ridimensiona();
+
+    vaiSlider('#carousel-one');
+}
