@@ -1,4 +1,8 @@
-currentState = {'#carousel-one': false, '#carousel-due': false, '#carousel-tre': false};
+currentState = {
+    '#carousel-one': false,
+    '#carousel-due': false,
+    '#carousel-tre': false
+};
 
 function Ridimensiona() {
     var height = $(window).height() + 'px';
@@ -83,6 +87,40 @@ function vaiSlider(name) {
 
 }
 
+function getData(fancyUrl){
+    $.ajax({
+	url : fancyUrl,
+	dataType : "JSON",
+	beforeSend : function(jqXHR, settings) {
+		//attivo loader sul body
+		//Scelta 1 : ho il loader nel dom da in display none:
+		$('.loader-image').show();
+		//Scelta 2 appendo il loader creandolo da zero
+		$('body').append($('img', {
+			class : 'loader-image',
+			src : '/immagine_loader.gif'
+		}));
+	},
+	success : function(data, textStatus) {
+		//il json che ritorna "/il_mio_json.php"
+		console.log(data);
+        var $img = $('<img></img>');
+        $img.attr('src', data.image);
+        $('.imgProduct').append($img);
+	},
+	error : function(jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR);
+		console.log(textStatus);
+		console.log(errorThrown);
+	},
+	complete : function(data) {
+		//disattivo loader sul body
+		//Scelta 1/2 : ho il loader nel dom da in qualche modo:
+		$('.loader-image').hide();
+	}
+}); 
+}
+
 function recuperaDati(jsonUrl, carouselId) {
     $.ajax({
         url: jsonUrl,
@@ -119,48 +157,58 @@ function recuperaDati(jsonUrl, carouselId) {
     });
 }
 
-onSuccess = function (data , carousel) {
-        //il json che ritorna "/il_mio_json.php"
-    
-        currentState[carousel] = true;
-    
-        done = true;
-        keys = Object.keys(currentState);
-        console.log(keys);
-        keys.forEach(function(k) {
-            if (!currentState[k])
-                done = false;
-        });
-        if (done)
-           // history.pushState({json: data, carouselId: '#carousel-one'}, null);
-             history.pushState({json: data, carouselId: carousel}, null);
-    
-        for (var i = 0; i < data.length; i++) {
+onSuccess = function (data, carousel) {
+    //il json che ritorna "/il_mio_json.php"
 
-            var $img = $('<img></img>');
-            var $scene = $('<div class=\'scene\'></div>');
-            var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
+    currentState[carousel] = true;
+
+    done = true;
+    keys = Object.keys(currentState);
+    console.log(keys);
+    keys.forEach(function (k) {
+        if (!currentState[k])
+            done = false;
+    });
+    if (done)
+    // history.pushState({json: data, carouselId: '#carousel-one'}, null);
+        history.pushState({
+        json: data,
+        carouselId: carousel
+    }, null);
+
+    for (var i = 0; i < data.length; i++) {
+
+
+        var $img = $('<img></img>');
+        var $scene = $('<div class=\'scene\'></div>');
+        var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
+        if (data[i].type == "prod") {
+            var $variuos = $('<a class=\'variousProduct\' href=\'#fancy\'></a>');
+        } else {
             var $variuos = $('<a class=\'various\'></a>');
-            var $div = $('<div></div>');
+        }
 
-            $img.attr('src', data[i].image);
-            $scene.append($img);
-            $scene.append($name);
-            $variuos.append($scene);
-            $div.append($variuos);
+        var $div = $('<div></div>');
 
-            $div.data('url_item', data[i].url);
+        $img.attr('src', data[i].image);
+        $scene.append($img);
+        $scene.append($name);
+        $variuos.append($scene);
+        $div.append($variuos);
 
-            $(carousel).append($div);
-            AniJS.run();
 
+        $div.data('url_item', data[i].url);
+
+        $(carousel).append($div);
+        AniJS.run();
+        if (data[i].type == "cat") {
             $div.click(function (event) {
                 var urlItem = $(this).data('url_item');
-                
+
                 //history.pushState({json: data, carouselId: carousel}, null)
-                           
+
                 $(carousel).remove();
-                
+
                 //h = '<div id=\'' + carousel.slice(1) + '\' class=\'responsive\'></div>';                
                 //$('.sliderContainer').append(h);
                 h1 = '<div id=\'\carousel-one\' class=\'responsive\'></div>'
@@ -169,13 +217,26 @@ onSuccess = function (data , carousel) {
                 $('.sliderContUno').append(h1);
                 $('.sliderContDue').append(h2);
                 $('.sliderContTre').append(h3);
-                
+
                 recuperaDati(urlItem, carousel);
             });
-        }
-        Ridimensiona();
 
-        vaiSlider(carousel);
+        } else if (data[i].type == "prod") {
+            console.log(data[i].type);
+            getData(data[i].url);
+            
+            $(this).click(function (event) {
+                $(".variousProduct").fancybox({
+
+                      
+                });
+            });
+        }
+
+    }
+    Ridimensiona();
+
+    vaiSlider(carousel);
 };
 
 $(document).ready(function () {
@@ -200,10 +261,10 @@ $(document).ready(function () {
         });
     });
 
-    recuperaDati("./data/uno.php" , '#carousel-one');
-    recuperaDati("./data/uno.php" , '#carousel-due');
-    recuperaDati("./data/uno.php" , '#carousel-tre');
-    
+    recuperaDati("./data/uno.php", '#carousel-one');
+    recuperaDati("./data/uno.php", '#carousel-due');
+    recuperaDati("./data/uno.php", '#carousel-tre');
+
 });
 
 window.onpopstate = function (event) {
@@ -215,7 +276,7 @@ window.onpopstate = function (event) {
 
     $(data.carouselId).remove();
     //$('.sliderContainer').append('<div id=\''+ data.carouselId.slice(1) +'\' class=\'responsive\'></div>');
-    
+
     h1 = '<div id=\'\carousel-one\' class=\'responsive\'></div>'
     h2 = '<div id=\'\carousel-due\' class=\'responsive\'></div>'
     h3 = '<div id=\'\carousel-tre\' class=\'responsive\'></div>'

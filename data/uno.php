@@ -5,14 +5,14 @@
          "id": "1",
          "category": "WEBCAM",
          "image": "http://www.istitutopaideia.com/animazione/img/webcam-icon.jpg",
-         "url": "./data/due.php"
+         "url": "./data/due.json"
   },
      {
          "type": "cat",
          "id": "2",
          "category": "WEBCAM",
          "image": "http://www.istitutopaideia.com/animazione/img/webcam-icon.jpg",
-         "url": "./data/due.json"
+         "url": "./data/due.php"
   },
      {
          "type": "cat",
