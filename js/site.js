@@ -103,7 +103,7 @@ function getData(fancyUrl){
 	},
 	success : function(data, textStatus) {
 		//il json che ritorna "/il_mio_json.php"
-		console.log(data);
+		//console.log(data);
         var $img = $('<img></img>');
         $img.attr('src', data.image);
         $('.imgProduct').append($img);
@@ -177,11 +177,11 @@ onSuccess = function (data, carousel) {
     }, null);
 
     for (var i = 0; i < data.length; i++) {
-
-
+        
         var $img = $('<img></img>');
         var $scene = $('<div class=\'scene\'></div>');
         var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
+
         if (data[i].type == "prod") {
             var $variuos = $('<a class=\'variousProduct\' href=\'#fancy\'></a>');
         } else {
@@ -195,16 +195,16 @@ onSuccess = function (data, carousel) {
         $scene.append($name);
         $variuos.append($scene);
         $div.append($variuos);
-
-
+        
         $div.data('url_item', data[i].url);
 
         $(carousel).append($div);
         AniJS.run();
+        
         if (data[i].type == "cat") {
             $div.click(function (event) {
                 var urlItem = $(this).data('url_item');
-
+                    
                 //history.pushState({json: data, carouselId: carousel}, null)
 
                 $(carousel).remove();
@@ -222,11 +222,16 @@ onSuccess = function (data, carousel) {
             });
 
         } else if (data[i].type == "prod") {
-            console.log(data[i].type);
-            getData(data[i].url);
             
-            $(this).click(function (event) {
-                $(".variousProduct").fancybox({
+            var $urlData = (data[i].url);
+            var link = $('.variousProduct');
+           
+            $(link).click(function () {
+                                
+
+               getData($urlData);
+                console.log($urlData);
+                $(this).fancybox({
 
                       
                 });
