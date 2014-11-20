@@ -87,38 +87,38 @@ function vaiSlider(name) {
 
 }
 
-function getData(fancyUrl){
+function getData(fancyUrl) {
     $.ajax({
-	url : fancyUrl,
-	dataType : "JSON",
-	beforeSend : function(jqXHR, settings) {
-		//attivo loader sul body
-		//Scelta 1 : ho il loader nel dom da in display none:
-		$('.loader-image').show();
-		//Scelta 2 appendo il loader creandolo da zero
-		$('body').append($('img', {
-			class : 'loader-image',
-			src : '/immagine_loader.gif'
-		}));
-	},
-	success : function(data, textStatus) {
-		//il json che ritorna "/il_mio_json.php"
-		//console.log(data);
-        var $img = $('<img></img>');
-        $img.attr('src', data.image);
-        $('.imgProduct').append($img);
-	},
-	error : function(jqXHR, textStatus, errorThrown) {
-		console.log(jqXHR);
-		console.log(textStatus);
-		console.log(errorThrown);
-	},
-	complete : function(data) {
-		//disattivo loader sul body
-		//Scelta 1/2 : ho il loader nel dom da in qualche modo:
-		$('.loader-image').hide();
-	}
-}); 
+        url: fancyUrl,
+        dataType: "JSON",
+        beforeSend: function (jqXHR, settings) {
+            //attivo loader sul body
+            //Scelta 1 : ho il loader nel dom da in display none:
+            $('.loader-image').show();
+            //Scelta 2 appendo il loader creandolo da zero
+            $('body').append($('img', {
+                class: 'loader-image',
+                src: '/immagine_loader.gif'
+            }));
+        },
+        success: function (data, textStatus) {
+            //il json che ritorna "/il_mio_json.php"
+            //console.log(data);
+            var $img = $('<img></img>');
+            $img.attr('src', data.image);
+            $('.imgProduct').append($img);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+        },
+        complete: function (data) {
+            //disattivo loader sul body
+            //Scelta 1/2 : ho il loader nel dom da in qualche modo:
+            $('.loader-image').hide();
+        }
+    });
 }
 
 function recuperaDati(jsonUrl, carouselId) {
@@ -177,13 +177,14 @@ onSuccess = function (data, carousel) {
     }, null);
 
     for (var i = 0; i < data.length; i++) {
-        
+
         var $img = $('<img></img>');
         var $scene = $('<div class=\'scene\'></div>');
         var $name = $('<div class=\'name\'>' + data[i].category + '</div>');
 
         if (data[i].type == "prod") {
             var $variuos = $('<a class=\'variousProduct\' href=\'#fancy\'></a>');
+            $variuos.attr('id', 'product-' + data[i].id);
         } else {
             var $variuos = $('<a class=\'various\'></a>');
         }
@@ -195,16 +196,16 @@ onSuccess = function (data, carousel) {
         $scene.append($name);
         $variuos.append($scene);
         $div.append($variuos);
-        
+
         $div.data('url_item', data[i].url);
 
         $(carousel).append($div);
         AniJS.run();
-        
+
         if (data[i].type == "cat") {
             $div.click(function (event) {
                 var urlItem = $(this).data('url_item');
-                    
+
                 //history.pushState({json: data, carouselId: carousel}, null)
 
                 $(carousel).remove();
@@ -222,27 +223,25 @@ onSuccess = function (data, carousel) {
             });
 
         } else if (data[i].type == "prod") {
-            
-            var $urlData = (data[i].url);
-            var link = $('.variousProduct');
-           
-            $(link).click(function () {
-                                
+            var idItem = $('#product-' + data[i].id);
+            console.log(data[i].url);
 
-               getData($urlData);
-                console.log($urlData);
-                $(this).fancybox({
+            var link = $(idItem);
+            link.data('url_item', data[i].url);
 
-                      
-                });
+            link.click(function () {
+                url = $(this).data('url_item');
+                console.log(url);
+                getData(url);
+                $(this).fancybox({});
             });
         }
-
     }
+
     Ridimensiona();
 
     vaiSlider(carousel);
-};
+}
 
 $(document).ready(function () {
     Ridimensiona();
