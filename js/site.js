@@ -160,17 +160,17 @@ function recuperaDati(jsonUrl, carouselId) {
 onSuccess = function (data, carousel) {
     //il json che ritorna "/il_mio_json.php"
 
-    currentState[carousel] = true;
+    //currentState[carousel] = true;
 
-    done = true;
-    keys = Object.keys(currentState);
-    console.log(keys);
-    keys.forEach(function (k) {
-        if (!currentState[k])
-            done = false;
-    });
-    if (done)
-    // history.pushState({json: data, carouselId: '#carousel-one'}, null);
+    //done = true;
+    //keys = Object.keys(currentState);
+    //console.log(keys);
+    //keys.forEach(function (k) {
+        //if (!currentState[k])
+           // done = false;
+   // });
+    //if (done)
+    history.pushState({json: data, carouselId: carousel}, null);
         history.pushState({
         json: data,
         carouselId: carousel
@@ -228,12 +228,14 @@ onSuccess = function (data, carousel) {
 
             var link = $(idItem);
             link.data('url_item', data[i].url);
-
+            
+            link.fancybox({});
             link.click(function () {
+                
                 url = $(this).data('url_item');
                 console.log(url);
                 getData(url);
-                $(this).fancybox({});
+                
             });
         }
     }
@@ -275,18 +277,25 @@ window.onpopstate = function (event) {
     console.log(event.state);
 
     if (event.state == null) return;
-
+    
     data = event.state;
 
-    $(data.carouselId).remove();
+    //$(data.carouselId).remove();
+    
+    
+    console.log(data.carouselId);
     //$('.sliderContainer').append('<div id=\''+ data.carouselId.slice(1) +'\' class=\'responsive\'></div>');
-
+    $('.responsive').remove();
     h1 = '<div id=\'\carousel-one\' class=\'responsive\'></div>'
     h2 = '<div id=\'\carousel-due\' class=\'responsive\'></div>'
     h3 = '<div id=\'\carousel-tre\' class=\'responsive\'></div>'
     $('.sliderContUno').append(h1);
     $('.sliderContDue').append(h2);
     $('.sliderContTre').append(h3);
+    
+    recuperaDati("./data/uno.php", '#carousel-one');
+    recuperaDati("./data/uno.php", '#carousel-due');
+    recuperaDati("./data/uno.php", '#carousel-tre');
 
     onSuccess(data.json, data.carouselId);
 };
