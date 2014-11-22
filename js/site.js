@@ -104,6 +104,7 @@ function getData(fancyUrl) {
         success: function (data, textStatus) {
             //il json che ritorna "/il_mio_json.php"
             //console.log(data);
+            
             var $img = $('<img></img>');
             $img.attr('src', data.image);
             $('.imgProduct').append($img);
@@ -175,7 +176,7 @@ onSuccess = function (data, carousel) {
         json: data,
         carouselId: carousel
     }, null);
-
+    
     for (var i = 0; i < data.length; i++) {
 
         var $img = $('<img></img>');
@@ -207,7 +208,7 @@ onSuccess = function (data, carousel) {
                 var urlItem = $(this).data('url_item');
 
                 //history.pushState({json: data, carouselId: carousel}, null)
-
+                $('.btnBack').show();
                 $(carousel).remove();
 
                 //h = '<div id=\'' + carousel.slice(1) + '\' class=\'responsive\'></div>';                
@@ -225,7 +226,7 @@ onSuccess = function (data, carousel) {
         } else if (data[i].type == "prod") {
             var idItem = $('#product-' + data[i].id);
             console.log(data[i].url);
-
+            $('.btnBack').show();
             var link = $(idItem);
             link.data('url_item', data[i].url);
             
@@ -297,5 +298,5 @@ window.onpopstate = function (event) {
     recuperaDati("./data/uno.php", '#carousel-due');
     recuperaDati("./data/uno.php", '#carousel-tre');
 
-    onSuccess(data.json, data.carouselId);
+    
 };

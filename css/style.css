@@ -141,6 +141,10 @@ a:hover {
 .ruota {
     display: none;
 }
+.loader-image{
+    margin: auto;
+    margin-left: 20%;
+}
 @media all and (min-width: 598px) and (max-height: 360px) {
     .name {
         font-size: 14px;
